@@ -116,9 +116,9 @@ jobs:
             $env:NEXT_TELEMETRY_DISABLED = "1"
             npm run build
 
-            # Reload app with PM2 (zero-downtime)
+            # Reload app with PM2 using ecosystem config (Windows-compatible)
             Write-Host "♻️ Reloading PM2 process..."
-            pm2 reload pulzetrend --update-env
+            pm2 reload ecosystem.config.js --update-env
 
             Write-Host "──────────────────────────────────"
             Write-Host "✅ Deployment complete!"
