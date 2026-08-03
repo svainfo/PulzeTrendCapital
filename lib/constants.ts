@@ -34,12 +34,21 @@ export const SOCIAL_LINKS = [
   { label: "YouTube", href: "https://youtube.com/@pulzetrendcapital", icon: "youtube" },
 ] as const;
 
-export const STATS = [
+type Stat = {
+  value: number;
+  suffix: string;
+  label: string;
+  prefix?: string;
+  separator?: boolean;
+  decimal?: number;
+};
+
+export const STATS: Stat[] = [
   { value: 50, suffix: "+", label: "Countries" },
   { value: 100, suffix: "+", label: "Satisfied Clients", separator: true },
   { value: 10, prefix: "<", suffix: "ms", label: "Execution Speed" },
   { value: 99.95, suffix: "%", label: "Order Execution", decimal: 2 },
-] as const;
+];
 
 export const WHY_CHOOSE_US = [
   {
