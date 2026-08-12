@@ -104,7 +104,10 @@ app.prepare().then(() => {
   });
 
   server.listen(port, "0.0.0.0", () => {
-    console.log(`> Ready on http://0.0.0.0:${port}`);
-    console.log(`> NODE_ENV: ${process.env.NODE_ENV || "development"}`);
+    console.log("===========================================");
+    console.log("  PULZETREND CUSTOM SERVER RUNNING");
+    console.log(`  Port    : ${port}`);
+    console.log(`  Env     : ${process.env.NODE_ENV || "development"}`);
+    console.log("===========================================");
   });
 });

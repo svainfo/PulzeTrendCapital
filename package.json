@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev --webpack",
+    "prebuild": "node -e \"const{rmSync}=require('fs');try{rmSync('.next/standalone',{recursive:true,force:true})}catch(e){}\" ",
     "build": "next build --webpack",
     "start": "node server.js",
     "lint": "next lint",
