@@ -26,13 +26,8 @@
     "clsx": "^2.1.1",
     "framer-motion": "^11.15.0",
     "lucide-react": "^0.469.0",
-<<<<<<< HEAD
-    "next": "^16.2.10",
-    "nodemailer": "^9.0.5",
-=======
     "next": "^16.2.11",
-    "nodemailer": "^6.9.16",
->>>>>>> b53d1a6fc743292bb59677544edd673596dcbe1a
+    "nodemailer": "^9.0.5",
     "react": "19.0.0",
     "react-countup": "^6.5.3",
     "react-dom": "19.0.0",
