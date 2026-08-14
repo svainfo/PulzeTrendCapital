@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "framer-motion";
 import {
-  MapPin, Phone, Mail, Clock,
+  MapPin, Mail, Clock,
   Twitter, Linkedin, Instagram, Youtube,
   CheckCircle, Loader2, Send,
 } from "lucide-react";
@@ -182,12 +182,6 @@ export function ContactSection() {
                 icon: <MapPin size={20} />,
                 label: "Our Office",
                 value: SITE_CONFIG.address,
-              },
-              {
-                icon: <Phone size={20} />,
-                label: "Phone",
-                value: SITE_CONFIG.phone,
-                href: `tel:${SITE_CONFIG.phone}`,
               },
               {
                 icon: <Mail size={20} />,

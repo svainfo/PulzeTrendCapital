@@ -105,14 +105,11 @@ const jsonLd = {
   url: SITE_CONFIG.url,
   logo: `${SITE_CONFIG.url}/logo.png`,
   email: SITE_CONFIG.email,
-  telephone: SITE_CONFIG.phone,
   address: {
     "@type": "PostalAddress",
-    streetAddress: "123 Financial District, Suite 800",
-    addressLocality: "New York",
-    addressRegion: "NY",
-    postalCode: "10005",
-    addressCountry: "US",
+    streetAddress: "Ground Floor, The Sotheby Building, Rodney Village, Rodney Bay",
+    addressLocality: "Gros-Islet",
+    addressCountry: "LC",
   },
   sameAs: [
     "https://twitter.com/pulzetrendcap",

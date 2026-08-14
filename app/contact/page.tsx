@@ -19,19 +19,16 @@ const jsonLd = {
   name: "Contact PulzeTrend Capital",
   url: "https://pulzetrendcapital.com/contact",
   description:
-    "Reach our 24/5 support team by phone, email, or the contact form.",
+    "Reach our 24/5 support team by email or the contact form.",
   mainEntity: {
     "@type": "Organization",
     name: "PulzeTrend Capital",
-    telephone: "+1-800-000-0000",
     email: "support@pulzetrendcapital.com",
     address: {
       "@type": "PostalAddress",
-      streetAddress: "123 Financial District, Suite 800",
-      addressLocality: "New York",
-      addressRegion: "NY",
-      postalCode: "10005",
-      addressCountry: "US",
+      streetAddress: "Ground Floor, The Sotheby Building, Rodney Village, Rodney Bay",
+      addressLocality: "Gros-Islet",
+      addressCountry: "LC",
     },
   },
 };
