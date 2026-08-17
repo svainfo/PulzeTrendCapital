@@ -26,7 +26,7 @@ export default function TradingPlatformsHome() {
           {PLATFORMS.map((platform, index) => (
             <motion.div
               key={platform.name}
-              initial={{ opacity: 0, y: 40 }}
+              initial={false}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-60px" }}
               transition={{ delay: index * 0.15, duration: 0.6 }}

@@ -19,7 +19,7 @@ function MissionVision() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           {/* Left content */}
           <motion.div
-            initial={{ opacity: 0, x: -30 }}
+            initial={false}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
@@ -55,7 +55,7 @@ function MissionVision() {
 
           {/* Right — stats visual */}
           <motion.div
-            initial={{ opacity: 0, x: 30 }}
+            initial={false}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.2 }}
@@ -123,7 +123,7 @@ function CoreValues() {
           {CORE_VALUES.map((value, index) => (
             <motion.div
               key={value.title}
-              initial={{ opacity: 0, y: 25 }}
+              initial={false}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.1, duration: 0.5 }}
@@ -163,7 +163,7 @@ function Timeline() {
             {TIMELINE_EVENTS.map((event, index) => (
               <motion.li
                 key={event.year}
-                initial={{ opacity: 0, x: index % 2 === 0 ? -40 : 40 }}
+                initial={false}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true, margin: "-60px" }}
                 transition={{ duration: 0.6 }}
@@ -217,7 +217,7 @@ function LeadershipTeam() {
           {leaders.map((leader, index) => (
             <motion.div
               key={leader.name}
-              initial={{ opacity: 0, y: 25 }}
+              initial={false}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.12, duration: 0.5 }}

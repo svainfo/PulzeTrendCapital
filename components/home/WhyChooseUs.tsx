@@ -31,7 +31,7 @@ export default function WhyChooseUs() {
           {WHY_CHOOSE_US.map((feature, index) => (
             <motion.div
               key={feature.title}
-              initial={{ opacity: 0, y: 30 }}
+              initial={false}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-60px" }}
               transition={{ delay: index * 0.1, duration: 0.5 }}

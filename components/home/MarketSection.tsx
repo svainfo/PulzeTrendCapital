@@ -59,7 +59,7 @@ export default function MarketSection() {
         <div className="mt-14 grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Market News */}
           <motion.div
-            initial={{ opacity: 0, x: -30 }}
+            initial={false}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
@@ -78,7 +78,7 @@ export default function MarketSection() {
               {MARKET_NEWS.map((news, index) => (
                 <motion.div
                   key={index}
-                  initial={{ opacity: 0, y: 15 }}
+                  initial={false}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: index * 0.08 }}
@@ -108,7 +108,7 @@ export default function MarketSection() {
 
           {/* Economic Calendar */}
           <motion.div
-            initial={{ opacity: 0, x: 30 }}
+            initial={false}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}

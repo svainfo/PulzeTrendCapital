@@ -158,7 +158,7 @@ export default function HeroSection() {
         <div className="max-w-4xl">
           {/* Badge */}
           <motion.div
-            initial={{ opacity: 0, x: -30 }}
+            initial={false}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
             className="inline-flex items-center gap-2 bg-gold-500/10 border border-gold-500/20 rounded-full px-4 py-2 mb-8"
@@ -172,7 +172,7 @@ export default function HeroSection() {
 
           {/* Headline */}
           <motion.h1
-            initial={{ opacity: 0, y: 40 }}
+            initial={false}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
             className="font-heading font-bold text-white leading-tight text-balance"
@@ -186,7 +186,7 @@ export default function HeroSection() {
 
           {/* Subheadline */}
           <motion.p
-            initial={{ opacity: 0, y: 30 }}
+            initial={false}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.4 }}
             className="mt-6 text-slate-300 text-xl leading-relaxed max-w-2xl"
@@ -198,7 +198,7 @@ export default function HeroSection() {
 
           {/* CTAs */}
           <motion.div
-            initial={{ opacity: 0, y: 25 }}
+            initial={false}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.6 }}
             className="flex flex-wrap items-center gap-4 mt-10"
@@ -223,7 +223,7 @@ export default function HeroSection() {
 
           {/* Trust Strip */}
           <motion.div
-            initial={{ opacity: 0 }}
+            initial={false}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.9 }}
             className="flex flex-wrap items-center gap-6 mt-12"
@@ -247,7 +247,7 @@ export default function HeroSection() {
 
       {/* Scroll indicator */}
       <motion.div
-        initial={{ opacity: 0 }}
+        initial={false}
         animate={{ opacity: 1 }}
         transition={{ delay: 1.5, duration: 0.5 }}
         className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"

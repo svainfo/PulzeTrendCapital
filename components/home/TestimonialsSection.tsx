@@ -23,7 +23,7 @@ export default function TestimonialsSection() {
           {TESTIMONIALS.map((testimonial, index) => (
             <motion.article
               key={testimonial.name}
-              initial={{ opacity: 0, y: 30 }}
+              initial={false}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-40px" }}
               transition={{ delay: index * 0.1, duration: 0.5 }}
@@ -69,7 +69,7 @@ export default function TestimonialsSection() {
 
         {/* Rating aggregate */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={false}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5, delay: 0.3 }}

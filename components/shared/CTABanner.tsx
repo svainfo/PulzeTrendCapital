@@ -39,14 +39,14 @@ export default function CTABanner({
 
       <div className="container-custom relative z-10">
         <motion.div
-          initial={{ opacity: 0, y: 40 }}
+          initial={false}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.7, ease: "easeOut" }}
           className="text-center max-w-3xl mx-auto"
         >
           <motion.div
-            initial={{ scale: 0.8, opacity: 0 }}
+            initial={false}
             whileInView={{ scale: 1, opacity: 1 }}
             viewport={{ once: true }}
             transition={{ delay: 0.1, duration: 0.5 }}

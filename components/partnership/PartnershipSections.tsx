@@ -67,7 +67,7 @@ export function ProgramsOverview() {
             <motion.div
               key={program.id}
               id={program.id}
-              initial={{ opacity: 0, y: 30 }}
+              initial={false}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.12, duration: 0.5 }}
@@ -113,7 +113,7 @@ export function BenefitsGrid() {
           {IB_BENEFITS.map((benefit, index) => (
             <motion.div
               key={benefit.title}
-              initial={{ opacity: 0, y: 25 }}
+              initial={false}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.08, duration: 0.5 }}
@@ -180,7 +180,7 @@ export function PartnerRegistrationForm() {
         />
 
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={false}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}

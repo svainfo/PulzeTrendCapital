@@ -72,7 +72,7 @@ export function ContactSection() {
         <div className="mt-14 grid grid-cols-1 lg:grid-cols-5 gap-10">
           {/* Contact Form — 3 cols */}
           <motion.div
-            initial={{ opacity: 0, x: -30 }}
+            initial={false}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
@@ -170,7 +170,7 @@ export function ContactSection() {
 
           {/* Contact Info — 2 cols */}
           <motion.div
-            initial={{ opacity: 0, x: 30 }}
+            initial={false}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.2 }}

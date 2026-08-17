@@ -37,7 +37,7 @@ export default function TradingInstrumentsHome() {
           {TRADING_INSTRUMENTS.map((instrument, index) => (
             <motion.div
               key={instrument.title}
-              initial={{ opacity: 0, scale: 0.96 }}
+              initial={false}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true, margin: "-50px" }}
               transition={{ delay: index * 0.08, duration: 0.5 }}
@@ -87,7 +87,7 @@ export default function TradingInstrumentsHome() {
         </div>
 
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={false}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5, delay: 0.4 }}

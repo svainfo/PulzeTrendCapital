@@ -52,13 +52,13 @@ export default function PageHero({
 
       <div className="container-custom relative z-10">
         <motion.div
-          initial={{ opacity: 0, y: 40 }}
+          initial={false}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, ease: "easeOut" }}
           className="max-w-3xl"
         >
           <motion.span
-            initial={{ opacity: 0, x: -20 }}
+            initial={false}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.1, duration: 0.5 }}
             className="inline-block text-gold-500 text-xs font-semibold tracking-[0.3em] uppercase font-body mb-4"
@@ -75,7 +75,7 @@ export default function PageHero({
 
           {(primaryCta || secondaryCta) && (
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={false}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4, duration: 0.5 }}
               className="flex flex-wrap gap-4 mt-8"

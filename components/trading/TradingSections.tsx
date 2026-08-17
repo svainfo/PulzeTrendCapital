@@ -36,7 +36,7 @@ export function TradingInstrumentsFull() {
           {TRADING_INSTRUMENTS.map((instrument, index) => (
             <motion.div
               key={instrument.title}
-              initial={{ opacity: 0, y: 25 }}
+              initial={false}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-40px" }}
               transition={{ delay: index * 0.08, duration: 0.5 }}
@@ -101,7 +101,7 @@ export function TradingConditions() {
           {conditions.map((c, index) => (
             <motion.div
               key={c.label}
-              initial={{ opacity: 0, scale: 0.95 }}
+              initial={false}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.07, duration: 0.4 }}
@@ -133,7 +133,7 @@ export function AccountTypesSection() {
           {ACCOUNT_TYPES.map((account, index) => (
             <motion.div
               key={account.name}
-              initial={{ opacity: 0, y: 30 }}
+              initial={false}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.12, duration: 0.5 }}
@@ -211,7 +211,7 @@ export function TradingProcess() {
             {TRADING_STEPS.map((step, index) => (
               <motion.li
                 key={step.step}
-                initial={{ opacity: 0, y: 25 }}
+                initial={false}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.12, duration: 0.5 }}
@@ -260,7 +260,7 @@ export function TradingPlatformsFull() {
           {platforms.map((p, index) => (
             <motion.div
               key={p.name}
-              initial={{ opacity: 0, y: 25 }}
+              initial={false}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.1, duration: 0.5 }}
