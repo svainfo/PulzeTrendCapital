@@ -6,7 +6,6 @@
     "dev": "next dev",
     "build": "next build",
     "start": "node server.js",
-    "postinstall": "next build",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "type-check": "tsc --noEmit",

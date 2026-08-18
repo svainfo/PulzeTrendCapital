@@ -1,10 +1,10 @@
 {
-  "/_not-found/page": "app/_not-found/page.js",
-  "/api/newsletter/route": "app/api/newsletter/route.js",
   "/api/contact/route": "app/api/contact/route.js",
+  "/api/newsletter/route": "app/api/newsletter/route.js",
+  "/_not-found/page": "app/_not-found/page.js",
+  "/page": "app/page.js",
   "/about/page": "app/about/page.js",
   "/contact/page": "app/contact/page.js",
-  "/trading/page": "app/trading/page.js",
-  "/page": "app/page.js",
-  "/partnership/page": "app/partnership/page.js"
+  "/partnership/page": "app/partnership/page.js",
+  "/trading/page": "app/trading/page.js"
 }
