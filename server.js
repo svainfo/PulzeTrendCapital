@@ -1,109 +1,118 @@
 /**
  * PulzeTrend Capital — Production Server
  *
- * Hostinger spawns multiple worker processes simultaneously. This server handles
- * that gracefully: if port 3000 is already bound by another worker, this instance
- * exits cleanly (code 0) rather than crashing with ERR_SERVER_NOT_RUNNING.
+ * Next.js 15 App Router spawns an internal worker child-process. On some Linux
+ * environments (including Hostinger), that worker's shutdown code calls
+ * server.close() on an already-closed socket, which throws ERR_SERVER_NOT_RUNNING.
+ * Next.js catches that error internally and calls process.exit(1), killing the
+ * whole server.
  *
- * An uncaughtException guard also silences Next.js 15's internal worker cleanup
- * error (ERR_SERVER_NOT_RUNNING) that occurs when the App Router tears down its
- * own internal IPC servers during graceful shutdown.
+ * Fixes applied here:
+ *  1. Intercept process.exit() BEFORE next is loaded so we can suppress
+ *     unexpected non-zero exits triggered by Next.js worker cleanup.
+ *  2. Catch uncaughtException / unhandledRejection to keep the process alive.
+ *  3. Delegate everything else to next's own production server (start-server)
+ *     which has the best built-in worker lifecycle management.
  */
 
 "use strict";
 
-const { createServer } = require("http");
-const next = require("next");
+const net = require("net");
 
-const port = parseInt(process.env.PORT || "3000", 10);
-const hostname = process.env.HOSTNAME || "0.0.0.0";
+// ─── 1. Monkey-patch net.Server.prototype.close ──────────────────────────────
+// Prevent "Error: Server is not running" from being thrown when Next.js
+// (or its workers, via IPC) calls close() on an already-closed socket.
+const _originalClose = net.Server.prototype.close;
+net.Server.prototype.close = function patchedClose(callback) {
+  if (!this.listening) {
+    if (typeof callback === "function") callback();
+    return this;
+  }
+  return _originalClose.call(this, callback);
+};
 
-// ─── Suppress Next.js internal cleanup errors ────────────────────────────────
-// Next.js 15 App Router spawns internal worker processes. When they shut down,
-// they sometimes call server.close() on already-closed sockets, throwing
-// ERR_SERVER_NOT_RUNNING. This is benign — we swallow it and stay alive.
+// ─── 2. Intercept process.exit() ─────────────────────────────────────────────
+// next/dist/server internals call process.exit(1) when a worker crashes.
+// We suppress non-zero exits that originate from Next.js shutdown code.
+const _originalExit = process.exit.bind(process);
+process.exit = function interceptedExit(code) {
+  if (code !== 0 && code !== undefined) {
+    const stack = new Error("exit-intercept").stack || "";
+    // Only suppress exits that come from Next.js internal cleanup code
+    if (
+      stack.includes("next/dist") ||
+      stack.includes("next\\dist") ||
+      stack.includes("start-server") ||
+      stack.includes("router-server")
+    ) {
+      console.warn(
+        `[server] Suppressed Next.js internal process.exit(${code}) — keeping server alive`
+      );
+      return;
+    }
+  }
+  _originalExit(code);
+};
+
+// ─── 3. Global error guards ───────────────────────────────────────────────────
 process.on("uncaughtException", (err) => {
   if (
     err.code === "ERR_SERVER_NOT_RUNNING" ||
     err.message === "Server is not running."
   ) {
     console.warn(
-      "[server] Suppressed ERR_SERVER_NOT_RUNNING from Next.js internal worker cleanup"
+      "[server] Suppressed ERR_SERVER_NOT_RUNNING from Next.js internal cleanup"
     );
-    return; // Do NOT exit — the main HTTP server is still healthy
+    return;
   }
-  console.error("[server] Uncaught fatal exception:", err);
-  process.exit(1);
+  console.error("[server] Uncaught exception:", err);
+  // Don't exit — log and continue so the server stays up
 });
 
 process.on("unhandledRejection", (reason) => {
   console.error("[server] Unhandled rejection:", reason);
-  // Don't exit — log and continue
 });
-// ─────────────────────────────────────────────────────────────────────────────
 
-const app = next({ dev: false, hostname, port });
-const handle = app.getRequestHandler();
+// ─── 4. Start Next.js production server ──────────────────────────────────────
+// Use Next.js's own start-server module which has the best built-in handling
+// for the App Router worker lifecycle.
+const { startServer } = require("next/dist/server/lib/start-server");
 
-app
-  .prepare()
-  .then(() => {
-    const server = createServer(async (req, res) => {
-      try {
-        // Use legacy url.parse to get a UrlWithParsedQuery that Next.js expects.
-        // The WHATWG URL API would require a base URL which corrupts path-only routing.
-        // eslint-disable-next-line n/no-deprecated-api
-        const parsedUrl = require("url").parse(req.url, true);
-        await handle(req, res, parsedUrl);
-      } catch (err) {
-        console.error("[server] Request error:", req.url, err);
-        if (!res.headersSent) {
-          res.statusCode = 500;
-          res.end("Internal Server Error");
-        }
-      }
-    });
+const port = parseInt(process.env.PORT || "3000", 10);
+const hostname = process.env.HOSTNAME || "0.0.0.0";
 
-    server.on("error", (err) => {
-      if (err.code === "EADDRINUSE") {
-        // Another worker is already serving on this port.
-        // Exit cleanly so the process manager doesn't see a crash.
-        console.log(
-          `[server] Port ${port} already in use — another worker is running. Exiting cleanly.`
-        );
-        process.exit(0);
-      } else {
-        console.error("[server] Fatal server error:", err);
-        process.exit(1);
-      }
-    });
-
-    // ── Graceful shutdown ────────────────────────────────────────────────────
+startServer({
+  dir: __dirname,
+  isDev: false,
+  hostname,
+  port,
+  allowRetry: false,
+  keepAliveTimeout: 5000,
+})
+  .then((server) => {
+    // Graceful shutdown
     const shutdown = (signal) => {
-      console.log(`[server] ${signal} received — shutting down`);
-      if (server && server.listening) {
-        server.close(() => {
-          console.log("[server] HTTP server closed");
-          process.exit(0);
-        });
-        // Force-exit after 10 s if connections don't drain
-        setTimeout(() => process.exit(0), 10_000).unref();
-      } else {
-        process.exit(0);
-      }
+      console.log(`[server] ${signal} — shutting down`);
+      server
+        .close()
+        .then(() => _originalExit(0))
+        .catch(() => _originalExit(0));
+      setTimeout(() => _originalExit(0), 10_000).unref();
     };
-
     process.on("SIGTERM", () => shutdown("SIGTERM"));
     process.on("SIGINT", () => shutdown("SIGINT"));
-    // ────────────────────────────────────────────────────────────────────────
-
-    server.listen(port, hostname, () => {
-      console.log(
-        `> PulzeTrend Capital server ready on http://${hostname}:${port}`
-      );
-    });
   })
   .catch((err) => {
-    console.error("[server] Failed to prepare Next.js app:", err);
-    process.exit(1);
+    if (
+      err.code === "EADDRINUSE" ||
+      err.message?.includes("address already in use")
+    ) {
+      console.log(
+        `[server] Port ${port} in use — another worker is running. Exiting cleanly.`
+      );
+      _originalExit(0);
+    } else {
+      console.error("[server] Fatal startup error:", err);
+      _originalExit(1);
+    }
   });
