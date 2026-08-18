@@ -13,7 +13,6 @@
 "use strict";
 
 const { createServer } = require("http");
-const { parse } = require("url");
 const next = require("next");
 
 const port = parseInt(process.env.PORT || "3000", 10);
@@ -51,7 +50,10 @@ app
   .then(() => {
     const server = createServer(async (req, res) => {
       try {
-        const parsedUrl = parse(req.url, true);
+        // Use legacy url.parse to get a UrlWithParsedQuery that Next.js expects.
+        // The WHATWG URL API would require a base URL which corrupts path-only routing.
+        // eslint-disable-next-line n/no-deprecated-api
+        const parsedUrl = require("url").parse(req.url, true);
         await handle(req, res, parsedUrl);
       } catch (err) {
         console.error("[server] Request error:", req.url, err);
