@@ -11,8 +11,10 @@
 # testing
 /coverage
 
-# next.js - only exclude cache, keep the build output committed
-.next/cache
+# next.js build output — must NOT be committed
+# Hostinger rebuilds on Linux with different chunk hashes than Windows.
+# Committing a Windows build causes hash mismatches → all chunks 404.
+/.next
 
 # production
 /build
