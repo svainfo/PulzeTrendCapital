@@ -1,12 +1,8 @@
 /**
  * PulzeTrend Capital — Production Server
  *
- * This server explicitly handles /_next/static/* requests by reading files
- * directly from .next/static/ with correct MIME types. This bypasses both:
- *   - Next.js's internal static file middleware (which may fail to locate files)
- *   - Hostinger's LiteSpeed proxy (which may intercept static file requests)
- *
- * All other requests are handled by Next.js's standard request handler.
+ * Explicitly serves /_next/static/* from .next/static/ with correct MIME types.
+ * Includes diagnostic logging to debug file-not-found issues on Hostinger.
  */
 
 "use strict";
@@ -47,6 +43,60 @@ const MIME_TYPES = {
   ".ico": "image/x-icon",
 };
 
+// ─── Diagnostic: Check .next directory status ─────────────────────────────────
+console.log("[server] __dirname:", __dirname);
+console.log("[server] cwd:", process.cwd());
+
+const dotNextPath = path.join(__dirname, ".next");
+const staticPath = path.join(dotNextPath, "static");
+const chunksPath = path.join(staticPath, "chunks");
+
+if (fs.existsSync(dotNextPath)) {
+  console.log("[server] .next/ EXISTS");
+  const buildIdPath = path.join(dotNextPath, "BUILD_ID");
+  if (fs.existsSync(buildIdPath)) {
+    console.log("[server] BUILD_ID:", fs.readFileSync(buildIdPath, "utf8").trim());
+  } else {
+    console.log("[server] BUILD_ID: NOT FOUND — build may not have completed!");
+  }
+} else {
+  console.error("[server] .next/ DOES NOT EXIST — no build output found!");
+  console.error("[server] Running 'next build' now...");
+  try {
+    require("child_process").execSync("npx next build", {
+      stdio: "inherit",
+      cwd: __dirname,
+      env: process.env,
+    });
+    console.log("[server] Build completed successfully");
+  } catch (err) {
+    console.error("[server] Build FAILED:", err.message);
+    process.exit(1);
+  }
+}
+
+if (fs.existsSync(staticPath)) {
+  console.log("[server] .next/static/ EXISTS");
+} else {
+  console.error("[server] .next/static/ DOES NOT EXIST!");
+}
+
+if (fs.existsSync(chunksPath)) {
+  const chunkFiles = fs.readdirSync(chunksPath);
+  console.log(`[server] .next/static/chunks/ has ${chunkFiles.length} files:`);
+  chunkFiles.forEach((f) => console.log(`[server]   ${f}`));
+} else {
+  console.error("[server] .next/static/chunks/ DOES NOT EXIST!");
+}
+
+// Also check for app/ subdirectory under chunks
+const appChunksPath = path.join(chunksPath, "app");
+if (fs.existsSync(appChunksPath)) {
+  const appFiles = fs.readdirSync(appChunksPath);
+  console.log(`[server] .next/static/chunks/app/ has ${appFiles.length} files:`);
+  appFiles.forEach((f) => console.log(`[server]   ${f}`));
+}
+
 // ─── Start Next.js ───────────────────────────────────────────────────────────
 const next = require("next");
 
@@ -60,15 +110,12 @@ app
   .prepare()
   .then(() => {
     const server = http.createServer((req, res) => {
-      // ── Explicitly serve /_next/static/* from .next/static/* ──────────
-      // This is the critical fix: map URL path /_next/static/... to the
-      // filesystem path .next/static/... and serve with correct MIME types.
       const url = req.url || "/";
-      const urlPath = url.split("?")[0]; // Strip query string
+      const urlPath = url.split("?")[0];
 
+      // ── Explicitly serve /_next/static/* from .next/static/* ──────────
       if (urlPath.startsWith("/_next/static/")) {
         const relativePath = urlPath.slice("/_next/static/".length);
-        // Prevent directory traversal
         const safePath = path.normalize(relativePath).replace(/^(\.\.(\/|\\|$))+/, "");
         const filePath = path.join(__dirname, ".next", "static", safePath);
 
@@ -88,7 +135,8 @@ app
             return;
           }
         } catch {
-          // File not found — fall through to Next.js handler
+          // Log the miss so we can debug
+          console.warn(`[server] STATIC FILE NOT FOUND: ${filePath}`);
         }
       }
 
@@ -117,7 +165,7 @@ app
         }
       }
 
-      // ── Let Next.js handle everything else (pages, API routes, etc.) ─
+      // ── Let Next.js handle everything else ───────────────────────────
       handle(req, res);
     });
 
@@ -125,7 +173,6 @@ app
       console.log(`> PulzeTrend Capital ready on http://${hostname}:${port}`);
     });
 
-    // ── EADDRINUSE: another worker already has the port ────────────────
     server.on("error", (err) => {
       if (err.code === "EADDRINUSE") {
         console.log(`[server] Port ${port} in use — exiting cleanly.`);
@@ -134,7 +181,7 @@ app
       console.error("[server] Server error:", err);
     });
 
-    // ── Graceful shutdown ──────────────────────────────────────────────
+    // Graceful shutdown
     const shutdown = (signal) => {
       console.log(`[server] ${signal} — shutting down`);
       if (server.listening) {
