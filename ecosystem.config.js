@@ -1,12 +1,14 @@
 /**
  * PM2 Ecosystem Configuration for PulzeTrend Capital
  *
- * Hostinger's Node.js hosting uses PM2 as the process manager. Without this
- * file, Hostinger's default PM2 config spawns 2 workers simultaneously — both
- * try to bind port 3000, causing an EADDRINUSE crash loop every ~2 seconds.
- *
- * This config forces exactly 1 process in fork mode to prevent that conflict.
+ * Configures the crash-prevention preload via node_args AND NODE_OPTIONS,
+ * ensuring the patch reaches both the main process and Next.js's internal
+ * child worker processes.
  */
+
+const path = require("path");
+const preloadPath = path.resolve(__dirname, "preload.js");
+
 module.exports = {
   apps: [
     {
@@ -14,20 +16,22 @@ module.exports = {
       script: "server.js",
 
       // ── Critical: 1 instance, fork mode ────────────────────────────────
-      // cluster mode = multiple workers sharing a port (broken on Hostinger)
-      // fork mode    = single process, owns port 3000 exclusively
       instances: 1,
       exec_mode: "fork",
 
+      // ── Inject preload.js into the main process via node args ──────────
+      node_args: `--require ${preloadPath}`,
+
       // ── Environment ─────────────────────────────────────────────────────
+      // NODE_OPTIONS ensures child processes (Next.js workers) also get
+      // the preload patch. child_process.fork() inherits process.env.
       env: {
         NODE_ENV: "production",
         PORT: 3000,
+        NODE_OPTIONS: `--require ${preloadPath}`,
       },
 
       // ── Restart behaviour ───────────────────────────────────────────────
-      // Only restart on non-zero exit. Our server.js exits with code 0 when
-      // another worker already holds the port — so no restart loop.
       autorestart: true,
       max_restarts: 10,
       min_uptime: "5s",
@@ -42,7 +46,7 @@ module.exports = {
       merge_logs: true,
       log_date_format: "YYYY-MM-DD HH:mm:ss Z",
 
-      // ── Graceful shutdown ────────────────────────────────────────────────
+      // ── Graceful shutdown ──────────────────────────────────────────────
       kill_timeout: 5000,
       listen_timeout: 10000,
     },
